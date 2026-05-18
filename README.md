@@ -1,5 +1,7 @@
 <h1 align="center"><img src="assets/icon.png" alt="" width="64" style="vertical-align: middle;">&nbsp; CLI-Anything: Making ALL Software Agent-Native</h1>
 
+<a href="https://trendshift.io/repositories/22991" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22991" alt="HKUDS%2FCLI-Anything | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
 <p align="center">
   <strong>Today's Software Serves Humans👨‍💻. Tomorrow's Users will be Agents🤖.<br>
 CLI-Anything: Bridging the Gap Between AI Agents and the World's Software</strong><br>
