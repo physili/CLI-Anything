@@ -83,6 +83,7 @@
 !/QGIS/
 !/n8n/
 !/obsidian/
+!/joplin/
 !/unrealinsights/
 !/firefly-iii/
 !/nsight-graphics/
@@ -175,6 +176,8 @@
 /n8n/.*
 /obsidian/*
 /obsidian/.*
+/joplin/*
+/joplin/.*
 /unrealinsights/*
 /unrealinsights/.*
 /nsight-graphics/*
@@ -236,6 +239,7 @@
 !/QGIS/agent-harness/
 !/n8n/agent-harness/
 !/obsidian/agent-harness/
+!/joplin/agent-harness/
 !/safari/
 !/safari/agent-harness/
 !/unrealinsights/agent-harness/
