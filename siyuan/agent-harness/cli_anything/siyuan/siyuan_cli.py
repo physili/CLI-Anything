@@ -240,20 +240,22 @@ def _handle_repl_command(skin: Any, cmd: str) -> None:
                 skin.success(f"Created doc: {doc_id}")
         elif sub == "list" and len(parts) >= 4:
             docs = client.list_docs_by_path(parts[2], parts[3])
+            items = docs.get("files", []) if isinstance(docs, dict) else docs
             if json_mode:
-                click.echo(json.dumps(docs, ensure_ascii=False))
+                click.echo(json.dumps(items, ensure_ascii=False))
             else:
                 skin.table(["ID", "Name", "Type"],
                            [[d.get("id", ""), d.get("name", ""), d.get("type", "")]
-                            for d in docs])
+                            for d in items])
         elif sub == "tree" and len(parts) >= 3:
             tree = client.list_doc_tree(parts[2])
+            items = tree.get("tree", []) if isinstance(tree, dict) else tree
             if json_mode:
-                click.echo(json.dumps(tree, ensure_ascii=False))
+                click.echo(json.dumps(items, ensure_ascii=False))
             else:
                 skin.table(["ID", "Title", "Path"],
                            [[t.get("id", ""), t.get("title", ""), t.get("path", "")]
-                            for t in tree])
+                            for t in items])
         elif sub == "get" and len(parts) >= 3:
             hpath = client.get_hpath_by_id(parts[2])
             if json_mode:
@@ -283,7 +285,7 @@ def _handle_repl_command(skin: Any, cmd: str) -> None:
             return
         sub = parts[1]
         if sub == "insert" and len(parts) >= 4:
-            result = client.insert_block("markdown", parts[3], previous_id=parts[2] if len(parts) > 2 else "")
+            result = client.insert_block("markdown", parts[3], parent_id=parts[2])
             if json_mode:
                 click.echo(json.dumps(result, ensure_ascii=False))
             else:
@@ -333,14 +335,15 @@ def _handle_repl_command(skin: Any, cmd: str) -> None:
     # search command
     elif parts[0] == "search" and len(parts) >= 2:
         query = " ".join(parts[1:])
-        results = client.search_blocks(query)
+        data = client.search_blocks(query)
+        blocks = data.get("blocks", []) if isinstance(data, dict) else data
         if json_mode:
-            click.echo(json.dumps(results, ensure_ascii=False))
-        elif not results:
+            click.echo(json.dumps(blocks, ensure_ascii=False))
+        elif not blocks:
             skin.info("No results")
         else:
             skin.table(["ID", "Content"],
-                       [[r.get("id", ""), r.get("content", "")[:80]] for r in results])
+                       [[r.get("id", ""), r.get("content", "")[:80]] for r in blocks])
 
     # export command
     elif parts[0] == "export" and len(parts) >= 3:
@@ -650,12 +653,13 @@ def version(ctx: SiYuanContext):
 @click.pass_obj
 def status(ctx: SiYuanContext):
     """Show connection and session status."""
-    siyuan_ver = ctx.client.get_version()
+    connected = ctx.client.ping()
+    siyuan_ver = ctx.client.get_version() if connected else ""
     session = ctx.session
     state = session.state
 
     info = {
-        "connected": state.connected,
+        "connected": connected,
         "siyuan_version": siyuan_ver,
         "host": ctx.client.config.host,
         "port": ctx.client.config.port,
