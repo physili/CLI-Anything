@@ -102,4 +102,98 @@ describe('sketch-cli security', () => {
     
     expect(result).toContain('Unsafe spec tokens path ignored');
   });
+
+  test('allows symlinks pointing inside the spec directory', () => {
+    const specDir = path.join(OUTPUT_DIR, 'spec-symlink-safe');
+    fs.mkdirSync(specDir, { recursive: true });
+    
+    const actualTokensPath = path.join(specDir, 'actual-tokens.json');
+    fs.writeFileSync(actualTokensPath, JSON.stringify({ colors: { primary: '#0000ff' } }));
+
+    const symlinkPath = path.join(specDir, 'safe-link.json');
+    try {
+      fs.symlinkSync(actualTokensPath, symlinkPath);
+    } catch (e) {
+      console.warn('Skipping safe symlink test: symlinks not supported/permitted');
+      return;
+    }
+
+    const inputPath = path.join(specDir, 'design.json');
+    const design = {
+      pages: [{ do_objectID: 'page1', layers: [], artboards: [] }],
+      tokens: './safe-link.json'
+    };
+    fs.writeFileSync(inputPath, JSON.stringify(design));
+
+    const outputPath = path.join(OUTPUT_DIR, 'out-safe-symlink.sketch');
+    
+    const result = execSync(
+      `node "${CLI}" build --input "${inputPath}" --output "${outputPath}" 2>&1`,
+      { encoding: 'utf-8', cwd: ROOT }
+    );
+    
+    expect(result).toContain('Done!');
+    expect(result).not.toContain('Unsafe spec tokens path ignored');
+  });
+
+  test('allows spec tokens from the global project tokens directory', () => {
+    const specDir = path.join(OUTPUT_DIR, 'spec-global-tokens');
+    fs.mkdirSync(specDir, { recursive: true });
+    
+    // We expect it to reach the actual global tokens directory in CLI-Anything/sketch/agent-harness/tokens
+    // For this test, we can mock the behavior by pointing to the real tokens dir
+    const tokensDir = path.resolve(ROOT, 'tokens');
+    const brandTokensPath = path.join(tokensDir, 'brand-test.json');
+    fs.writeFileSync(brandTokensPath, JSON.stringify({ colors: { primary: '#666666' } }));
+
+    const inputPath = path.join(specDir, 'design.json');
+    const design = {
+      pages: [{ do_objectID: 'page1', layers: [], artboards: [] }],
+      tokens: '../../../tokens/brand-test.json' // Correct relative path to reach sketch/agent-harness/tokens
+    };
+    fs.writeFileSync(inputPath, JSON.stringify(design));
+
+    const outputPath = path.join(OUTPUT_DIR, 'out-global.sketch');
+    
+    try {
+      const result = execSync(
+        `node "${CLI}" build --input "${inputPath}" --output "${outputPath}" 2>&1`,
+        { encoding: 'utf-8', cwd: ROOT }
+      );
+      
+      expect(result).toContain('Done!');
+      expect(result).not.toContain('Unsafe spec tokens path ignored');
+    } finally {
+      if (fs.existsSync(brandTokensPath)) fs.unlinkSync(brandTokensPath);
+    }
+  });
+
+  test('allows CLI tokens from the current working directory (CWD)', () => {
+    // In this test, the ROOT of the harness is the CWD for the command
+    const cwdTokensPath = path.join(ROOT, 'cwd-tokens.json');
+    fs.writeFileSync(cwdTokensPath, JSON.stringify({ colors: { primary: '#333333' } }));
+
+    const specDir = path.join(OUTPUT_DIR, 'spec-cwd');
+    fs.mkdirSync(specDir, { recursive: true });
+    
+    const inputPath = path.join(specDir, 'design.json');
+    const design = {
+      pages: [{ do_objectID: 'page1', layers: [], artboards: [] }]
+    };
+    fs.writeFileSync(inputPath, JSON.stringify(design));
+
+    const outputPath = path.join(OUTPUT_DIR, 'out-cwd.sketch');
+    
+    try {
+      const result = execSync(
+        `node "${CLI}" build --input "${inputPath}" --output "${outputPath}" --tokens cwd-tokens.json 2>&1`,
+        { encoding: 'utf-8', cwd: ROOT }
+      );
+      
+      expect(result).toContain('Done!');
+      expect(result).not.toContain('Unsafe tokens path ignored');
+    } finally {
+      if (fs.existsSync(cwdTokensPath)) fs.unlinkSync(cwdTokensPath);
+    }
+  });
 });
