@@ -104,6 +104,21 @@ def cli(ctx: click.Context, json_output: bool, host: str, port: int,
         ctx.invoke(repl)
 
 
+def _walk_tree(items: list[dict], depth: int = 0) -> list[dict]:
+    """Recursively flatten a doc tree, setting depth on each entry.
+
+    Returns new dicts; does not mutate the originals.
+    """
+    result: list[dict] = []
+    for t in items:
+        entry = {**t, "depth": depth}
+        result.append(entry)
+        children = t.get("children")
+        if children:
+            result.extend(_walk_tree(children, depth + 1))
+    return result
+
+
 # ── REPL ───────────────────────────────────────────────────────────────
 
 def _build_repl_commands() -> dict[str, str]:
@@ -295,8 +310,8 @@ def _handle_doc_repl(skin: Any, client: SiYuanClient,
             click.echo(json.dumps(items, ensure_ascii=False))
         else:
             skin.table(["ID", "Name", "Path"],
-                       [[t.get("id", ""), t.get("name", ""), t.get("path", "")]
-                        for t in items])
+                       [[t.get("id", ""), "  " * t.get("depth", 0) + t.get("name", ""), t.get("path", "")]
+                        for t in _walk_tree(items)])
     elif sub == "get" and len(parts) >= 3:
         hpath = client.get_hpath_by_id(parts[2])
         if json_mode:
@@ -546,7 +561,7 @@ def doc_tree(ctx: SiYuanContext, notebook_id: str, path: str, depth: int):
     if ctx.json_output:
         click.echo(json.dumps(items, ensure_ascii=False))
     else:
-        for t in items:
+        for t in _walk_tree(items):
             indent = "  " * t.get("depth", 0)
             click.echo(f"{indent}{t.get('name', '')}  ({t.get('id', '')})")
 
