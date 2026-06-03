@@ -254,7 +254,7 @@ Use the CLI-Anything generator when you need a new harness for software, a codeb
 
 - **Python 3.10+**
 - Target software or source repo available locally or online
-- A supported AI coding agent: [Claude Code](#-claude-code) | [Pi](#-pi-coding-agent) | [OpenClaw](#-openclaw) | [OpenCode](#-opencode) | [Codex](#-codex) | [Qodercli](#-qodercli) | [GitHub Copilot CLI](#-github-copilot-cli) | [More Platforms](#-more-platforms-coming-soon)
+- A supported AI coding agent: [Claude Code](#-claude-code) | [Pi](#-pi-coding-agent) | [OpenClaw](#-openclaw) | [OpenCode](#-opencode) | [Codex](#-codex) | [Hermes](#-hermes) | [Qodercli](#-qodercli) | [GitHub Copilot CLI](#-github-copilot-cli) | [More Platforms](#-more-platforms-coming-soon)
 
 ### Pick Your Agent Platform
 
@@ -568,6 +568,48 @@ Use CLI-Anything to validate ./libreoffice
 
 The Codex skill adapts the same methodology used by the Claude Code plugin and
 OpenCode commands, while keeping the generated Python harness format unchanged.
+</details>
+
+<details>
+
+<summary><h4 id="-hermes">⚡ Hermes <sup><code>Experimental</code></sup> <sup><code>Community</code></sup></h4></summary>
+
+**Step 1: Install the Skill**
+
+Run the bundled installer:
+
+```bash
+# Clone the repo
+git clone https://github.com/HKUDS/CLI-Anything.git
+
+# Install the skill
+bash CLI-Anything/hermes-skill/scripts/install.sh
+```
+
+On Windows PowerShell, use:
+
+```powershell
+.\CLI-Anything\hermes-skill\scripts\install.ps1
+```
+
+This installs the skill to `$HERMES_HOME/skills/cli-anything-hermes` (or `~/.hermes/skills/cli-anything-hermes` if `HERMES_HOME` is unset).
+
+Restart [Hermes Agent](https://github.com/NousResearch/hermes-agent) after installation so it is discovered.
+
+**Step 2: Use CLI-Anything from Hermes**
+
+Describe the task in natural language, for example:
+
+```text
+Use CLI-Anything to build a harness for ./gimp
+Use CLI-Anything to refine ./shotcut for picture-in-picture workflows
+Use CLI-Anything to validate ./libreoffice
+```
+
+The Hermes skill adapts the same methodology used by the Claude Code plugin and
+Codex skill, binding Hermes's `terminal`, `execute_code`, `delegate_task`, and
+`read_file` / `write_file` / `patch` tools to the 7-phase harness workflow while
+keeping the generated Python harness format unchanged.
 </details>
 
 <details>
@@ -1296,6 +1338,7 @@ cli-anything/
 │       └── setup-cli-anything.sh         # Setup script
 │
 ├── 🤖 codex-skill/                      # Codex skill entry point
+├── 🧭 hermes-skill/                     # Hermes Agent skill entry point
 ├── 🎨 gimp/agent-harness/               # GIMP CLI (107 tests)
 ├── 🧊 blender/agent-harness/            # Blender CLI (208 tests)
 ├── ✏️ inkscape/agent-harness/            # Inkscape CLI (202 tests)
