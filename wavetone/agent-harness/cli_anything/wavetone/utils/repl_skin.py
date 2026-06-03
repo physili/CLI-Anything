@@ -447,7 +447,7 @@ class ReplSkin:
 
         # Separator
         sep_parts = [self._c(_DARK_GRAY, _H_LINE * w) for w in col_widths]
-        sep_line = self._c(_DARK_GRAY, f"  {'───'.join([_H_LINE * w for w in col_widths])}")
+        sep_line = f"  {sep.join(sep_parts)}"
         print(sep_line)
 
         # Rows

@@ -84,7 +84,7 @@ cli_anything/wavetone/tests/test_full_e2e.py::TestCLISubprocess::test_formats_js
 cli_anything/wavetone/tests/test_full_e2e.py::TestRealWaveToneBackend::test_doctor_real_backend PASSED
 cli_anything/wavetone/tests/test_full_e2e.py::TestRealWaveToneBackend::test_launch_real_backend_with_wav PASSED
 
-13 passed in 4.64s
+13 passed in 3.35s
 ```
 
 ## Coverage Notes
@@ -95,6 +95,8 @@ cli_anything/wavetone/tests/test_full_e2e.py::TestRealWaveToneBackend::test_laun
   entry point.
 - Real backend coverage launches `C:\Users\Hp\Desktop\wavetone2.6.1\wavetone.exe`
   with a generated WAV and terminates it after a short wait.
+- Real backend tests are skipped automatically when Windows or a ready WaveTone
+  extraction is unavailable.
 - WaveTone 2.61 has no documented headless analysis/export API. Export
   verification remains a known gap until a stable non-GUI automation surface is
   discovered.

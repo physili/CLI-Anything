@@ -113,8 +113,9 @@ def launch_wavetone(
     process = subprocess.Popen(args, cwd=str(exe.parent))
     if wait_seconds > 0:
         time.sleep(wait_seconds)
-    running_after_wait = process.poll() is None
-    exit_code = process.poll()
+    polled = process.poll()
+    running_after_wait = polled is None
+    exit_code = polled
     terminated = False
     if terminate and running_after_wait:
         process.terminate()

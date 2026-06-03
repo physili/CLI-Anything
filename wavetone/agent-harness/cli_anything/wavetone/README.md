@@ -53,4 +53,6 @@ python -m pytest cli_anything/wavetone/tests/ -v
 
 The full E2E test launches the real WaveTone executable. It requires Windows and
 a WaveTone 2.61 extraction with `wavetone.exe` and the bundled `data` directory.
-Use `WAVETONE_EXE` or `WAVETONE_HOME` to point the test at the installation.
+Use `WAVETONE_EXE` or `WAVETONE_HOME` to point the test at the installation. If
+the backend is unavailable, the real-backend tests are skipped and the CLI-only
+tests still run.

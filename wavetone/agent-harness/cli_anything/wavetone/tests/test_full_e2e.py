@@ -10,6 +10,8 @@ import sys
 import wave
 from pathlib import Path
 
+import pytest
+
 from cli_anything.wavetone.utils import wavetone_backend
 
 
@@ -37,6 +39,22 @@ def _resolve_cli(name: str) -> list[str]:
     module = "cli_anything.wavetone.wavetone_cli"
     print(f"[_resolve_cli] Falling back to: {sys.executable} -m {module}")
     return [sys.executable, "-m", module]
+
+
+def _real_backend_ready() -> tuple[bool, str]:
+    if sys.platform != "win32":
+        return False, "WaveTone real-backend tests require Windows"
+
+    status = wavetone_backend.doctor()
+    if status.get("ready"):
+        return True, ""
+
+    failed_checks = [check["name"] for check in status.get("checks", []) if not check.get("ok")]
+    reason = ", ".join(failed_checks) if failed_checks else "WaveTone backend is not ready"
+    return False, f"WaveTone real backend unavailable: {reason}"
+
+
+_REAL_BACKEND_READY, _REAL_BACKEND_SKIP_REASON = _real_backend_ready()
 
 
 class TestCLISubprocess:
@@ -80,6 +98,7 @@ class TestCLISubprocess:
         assert "MP3" in data["formats"]["from_readme"]
 
 
+@pytest.mark.skipif(not _REAL_BACKEND_READY, reason=_REAL_BACKEND_SKIP_REASON)
 class TestRealWaveToneBackend:
     CLI_BASE = _resolve_cli("cli-anything-wavetone")
 

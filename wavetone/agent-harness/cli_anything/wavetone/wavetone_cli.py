@@ -93,8 +93,13 @@ def repl(ctx: click.Context) -> None:
         try:
             args = shlex.split(line, posix=(os.name != "nt"))
             cli.main(args=args, prog_name="cli-anything-wavetone", standalone_mode=False, obj=ctx.obj)
+        except click.ClickException as exc:  # pragma: no cover
+            skin.error(exc.format_message())
+        except click.exceptions.Exit as exc:  # pragma: no cover
+            if exc.exit_code not in (0, None):
+                skin.error(f"Command exited with code {exc.exit_code}")
         except Exception as exc:  # pragma: no cover
-            skin.error(str(exc))
+            skin.error(f"Unexpected error: {exc}")
     skin.print_goodbye()
 
 
