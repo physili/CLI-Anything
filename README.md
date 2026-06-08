@@ -554,6 +554,11 @@ On Windows PowerShell, use:
 ```
 
 This installs the skill to `$CODEX_HOME/skills/cli-anything` (or `~/.codex/skills/cli-anything` if `CODEX_HOME` is unset).
+The installer also vendors the canonical `HARNESS.md`, command specifications,
+on-demand guides, reusable helper scripts, skill template, and preview protocol
+into the installed skill's `references/` and `scripts/` directories.
+This keeps the Codex skill self-contained while using `cli-anything-plugin/` as
+the source of truth.
 
 Restart Codex after installation so it is discovered.
 
@@ -565,10 +570,17 @@ Describe the task in natural language, for example:
 Use CLI-Anything to build a harness for ./gimp
 Use CLI-Anything to refine ./shotcut for picture-in-picture workflows
 Use CLI-Anything to validate ./libreoffice
+Use CLI-Anything to list generated harnesses under the current directory
 ```
 
 The Codex skill adapts the same methodology used by the Claude Code plugin and
 OpenCode commands, while keeping the generated Python harness format unchanged.
+
+To verify the self-contained Codex installation locally:
+
+```bash
+bash CLI-Anything/codex-skill/tests/test_install.sh
+```
 </details>
 
 <details>
@@ -1338,7 +1350,11 @@ cli-anything/
 │   └── scripts/
 │       └── setup-cli-anything.sh         # Setup script
 │
-├── 🤖 codex-skill/                      # Codex skill entry point
+├── 🤖 codex-skill/                      # Self-contained Codex skill installer
+│   ├── SKILL.md                         # Codex workflow entry point
+│   ├── agents/                          # Codex UI metadata
+│   ├── scripts/                         # Bash and PowerShell installers
+│   └── tests/                           # Installer resource-sync regression test
 ├── 🧭 hermes-skill/                     # Hermes Agent skill entry point
 ├── 🎨 gimp/agent-harness/               # GIMP CLI (107 tests)
 ├── 🧊 blender/agent-harness/            # Blender CLI (208 tests)

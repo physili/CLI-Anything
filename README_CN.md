@@ -278,6 +278,7 @@ bash CLI-Anything/codex-skill/scripts/install.sh
 ```
 
 脚本会把 skill 安装到 `$CODEX_HOME/skills/cli-anything`；如果没有设置 `CODEX_HOME`，则默认安装到 `~/.codex/skills/cli-anything`。
+安装器还会把权威版本的 `HARNESS.md`、命令规范、按需指南、可复用辅助脚本、skill 模板和 preview 协议复制到已安装 skill 的 `references/` 和 `scripts/` 目录。这样 Codex skill 可以独立工作，同时仍以 `cli-anything-plugin/` 作为唯一权威来源。
 
 安装后重启 Codex，让它重新发现这个 skill。
 
@@ -289,10 +290,17 @@ bash CLI-Anything/codex-skill/scripts/install.sh
 Use CLI-Anything to build a harness for ./gimp
 Use CLI-Anything to refine ./shotcut for picture-in-picture workflows
 Use CLI-Anything to validate ./libreoffice
+Use CLI-Anything to list generated harnesses under the current directory
 ```
 
 这个 Codex skill 复用了 Claude Code 插件和 OpenCode 命令所使用的同一套方法论，
 不会改变生成出来的 Python harness 结构。
+
+可以运行下面的命令，验证 Codex 安装包是否完整：
+
+```bash
+bash CLI-Anything/codex-skill/tests/test_install.sh
+```
 
 </details>
 
@@ -741,7 +749,11 @@ cli-anything/
 │   ├── cli-anything-validate.md         # 标准验证
 │   └── cli-anything-list.md             # 列出所有 CLI 工具
 │
-├── 🤖 codex-skill/                      # Codex skill 接入层
+├── 🤖 codex-skill/                      # 可独立安装的 Codex skill
+│   ├── SKILL.md                         # Codex 工作流入口
+│   ├── agents/                          # Codex 界面元数据
+│   ├── scripts/                         # Bash 和 PowerShell 安装器
+│   └── tests/                           # 安装资源同步回归测试
 ├── 🎨 gimp/agent-harness/               # GIMP CLI（107 项测试）
 ├── 🧊 blender/agent-harness/            # Blender CLI（208 项测试）
 ├── ✏️ inkscape/agent-harness/            # Inkscape CLI（202 项测试）
