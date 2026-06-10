@@ -1,5 +1,5 @@
 ---
-name: cli-anything-siyuan
+name: "cli-anything-siyuan"
 description: SiYuan (思源笔记) CLI — manage notebooks, documents, blocks, and search your knowledge base from the terminal.
 ---
 
